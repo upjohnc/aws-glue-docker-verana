@@ -1,27 +1,28 @@
 FROM ubuntu:20.04
 
 ## system setup
-
-
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
-RUN apt-get install -y git \
-	wget \
-	zip
+RUN apt-get install -y \
+	wget zip libbz2-dev \
+ 	build-essential zlib1g-dev \
+	libncurses5-dev libgdbm-dev libnss3-dev \
+	libssl-dev libreadline-dev \
+	libffi-dev libsqlite3-dev
 
 ## setup java
 RUN apt-get install -y openjdk-11-jdk
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
 # setup python
-# RUN wget https://www.python.org/ftp/python/3.7.11/Python-3.7.11.tgz --no-check-certificate
-# RUN tar -xvf Python-3.7.11.tgz
-# RUN rm Python-3.7.11.tgz
+RUN wget https://www.python.org/ftp/python/3.7.11/Python-3.7.11.tgz --no-check-certificate
+RUN tar -xvf Python-3.7.11.tgz
+RUN rm Python-3.7.11.tgz
 
-# WORKDIR /home/Python-3.7.11/
-# RUN ./configure --enable-optimizations
-# RUN make install
-# ENV PYTHONPATH=/usr/local/bin/python3.7
+WORKDIR /home/Python-3.7.11/
+RUN ./configure --enable-optimizations
+RUN make install
+ENV PYTHONPATH=/usr/local/bin/python3.7
 
 WORKDIR /home/
 
@@ -40,3 +41,5 @@ ENV SPARK_HOME=/home/spark-3.1.1-amzn-0-bin-3.2.1-amzn-3
 ## get aws glue libs main branch
 RUN wget https://github.com/awslabs/aws-glue-libs/archive/refs/tags/v3.0.tar.gz --no-check-certificate
 RUN tar -xvf v3.0.tar.gz
+RUN rm v3.0.tar.gz
+RUN bash /home/aws-glue-libs-3.0/bin/glue-setup.sh
