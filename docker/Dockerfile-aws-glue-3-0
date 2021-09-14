@@ -1,22 +1,41 @@
 FROM ubuntu:20.04
 
-WORKDIR /home/
+## system setup
+
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
 RUN apt-get install -y git \
-	python3.7 \
 	wget \
-	openjdk-11-jdk
+	zip
+
+## setup java
+RUN apt-get install -y openjdk-11-jdk
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+
+# setup python
+# RUN wget https://www.python.org/ftp/python/3.7.11/Python-3.7.11.tgz --no-check-certificate
+# RUN tar -xvf Python-3.7.11.tgz
+# RUN rm Python-3.7.11.tgz
+
+# WORKDIR /home/Python-3.7.11/
+# RUN ./configure --enable-optimizations
+# RUN make install
+# ENV PYTHONPATH=/usr/local/bin/python3.7
+
+WORKDIR /home/
 
 ## get apache maven
 RUN wget https://aws-glue-etl-artifacts.s3.amazonaws.com/glue-common/apache-maven-3.6.0-bin.tar.gz
 RUN tar -xvf apache-maven-3.6.0-bin.tar.gz
+RUN rm apache-maven-3.6.0-bin.tar.gz
+ENV PATH=/home/apache-maven-3.6.0/bin:$PATH
 
 ## get aws spark distro
 RUN wget https://aws-glue-etl-artifacts.s3.amazonaws.com/glue-3.0/spark-3.1.1-amzn-0-bin-3.2.1-amzn-3.tgz
 RUN tar -xvf spark-3.1.1-amzn-0-bin-3.2.1-amzn-3.tgz
-ENV SPARK_HOME=/home/spark-2.4.3-bin-spark-3.1.1-amzn-0-bin-3.2.1-amzn-3
+RUN rm spark-3.1.1-amzn-0-bin-3.2.1-amzn-3.tgz
+ENV SPARK_HOME=/home/spark-3.1.1-amzn-0-bin-3.2.1-amzn-3
 
 ## get aws glue libs main branch
 RUN wget https://github.com/awslabs/aws-glue-libs/archive/refs/tags/v3.0.tar.gz --no-check-certificate
